@@ -1,9 +1,10 @@
-import typescript from "rollup-plugin-typescript2";
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import pkg from "./package.json" assert { type: "json" };
+const typescript = require("rollup-plugin-typescript2");
+const resolve = require("@rollup/plugin-node-resolve");
+const commonjs = require("@rollup/plugin-commonjs");
+const json = require("@rollup/plugin-json");
+const pkg = require("./package.json");
 
-export default {
+module.exports = {
     input: "src/index.ts",
     output: [
         {
@@ -21,6 +22,7 @@ export default {
     plugins: [
         resolve(),
         commonjs(),
+        json(),
         typescript({
             tsconfig: "./tsconfig.json",
             useTsconfigDeclarationDir: true,

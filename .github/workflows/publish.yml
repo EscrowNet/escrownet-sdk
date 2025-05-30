@@ -6,7 +6,48 @@ on:
             - "v*.*.*"
 
 jobs:
+    validate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+                  cache: "npm"
+
+            - name: Install Dependencies
+              run: npm ci
+
+            - name: Validate Version
+              run: |
+                  TAG_VERSION=${GITHUB_REF#refs/tags/}
+                  PACKAGE_VERSION=$(node -p "require('./package.json').version")
+                  if [ "$TAG_VERSION" != "v$PACKAGE_VERSION" ]; then
+                    echo "Tag version ($TAG_VERSION) doesn't match package.json version (v$PACKAGE_VERSION)"
+                    exit 1
+                  fi
+
+            - name: Run Tests
+              run: npm test
+
+            - name: Build
+              run: npm run build
+
+            - name: Validate Build Output
+              run: |
+                  if [ ! -f "dist/index.cjs.js" ] || [ ! -f "dist/index.esm.js" ]; then
+                    echo "Build output files are missing"
+                    exit 1
+                  fi
+
+            - name: Security Audit
+              run: npm audit --production
+
     publish:
+        needs: validate
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Code
@@ -17,6 +58,7 @@ jobs:
               with:
                   node-version: "18"
                   registry-url: "https://registry.npmjs.org/"
+                  cache: "npm"
 
             - name: Install Dependencies
               run: npm ci
