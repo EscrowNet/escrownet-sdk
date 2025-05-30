@@ -1,0 +1,35 @@
+{
+    "name": "escrownet-sdk",
+    "version": "1.0.0",
+    "description": "The **EscrowNet SDK** is a JavaScript/TypeScript library that enables developers to integrate secure escrow functionality into their applications on [Starknet](https://starknet.io/), a Layer 2 scaling solution for Ethereum. The SDK provides a simple and secure interface for interacting with EscrowNet’s smart contracts, supporting features like user registration, escrow creation, and fund management. Built with Starknet’s native Account Abstraction (AA) and session-based authentication, it simplifies complex blockchain interactions for developers building decentralized applications (dApps).",
+    "main": "index.js",
+    "directories": {
+        "doc": "docs",
+        "example": "examples",
+        "test": "tests"
+    },
+    "scripts": {
+        "lint": "eslint . --ext .ts",
+        "format": "prettier --write .",
+        "test": "jest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Thekal33d/escrownet-sdk.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Thekal33d/escrownet-sdk/issues"
+    },
+    "homepage": "https://github.com/Thekal33d/escrownet-sdk#readme",
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "eslint": "^9.27.0",
+        "jest": "^29.7.0",
+        "prettier": "^3.5.3",
+        "ts-jest": "^29.3.4",
+        "typescript": "^5.8.3"
+    }
+}
