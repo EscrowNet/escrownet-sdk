@@ -1,8 +1,7 @@
-export const version = "0.1.0";
-
-// Add your SDK exports here
-export class EscrowSDK {
-    constructor() {
-        // Initialize your SDK
-    }
+interface SumFunction {
+    (a: number, b: number): number;
 }
+
+export const sum: SumFunction = function(a: number, b: number): number {
+    return a + b;
+};
