@@ -1,35 +1,129 @@
 # EscrowNet SDK
 
-The **EscrowNet SDK** is a JavaScript/TypeScript library that enables developers to integrate secure escrow functionality into their applications on [Starknet](https://starknet.io/), a Layer 2 scaling solution for Ethereum. The SDK provides a simple and secure interface for interacting with EscrowNet’s smart contracts, supporting features like user registration, escrow creation, and fund management. Built with Starknet’s native Account Abstraction (AA) and session-based authentication, it simplifies complex blockchain interactions for developers building decentralized applications (dApps).
-
-## Features
-
--   **User Registration**: Register users with unique usernames (e.g., `otaiki`) on the EscrowNet contract.
--   **Escrow Management**: Create, release, and cancel escrow contracts with customizable terms.
--   **Dynamic Gas Estimation**: Automatically handle Starknet’s `l1_gas` and `l1_data_gas` fees to prevent transaction failures.
--   **Session-Based Authentication**: Use session tokens for seamless transaction signing, reducing user friction.
--   **Wallet Compatibility**: Supports Starknet wallets like Argent X and Braavos.
--   **TypeScript Support**: Fully typed APIs for modern JavaScript/TypeScript development.
+A TypeScript SDK for interacting with the EscrowNet smart contract on StarkNet.
 
 ## Installation
 
-Install the EscrowNet SDK via npm:
+```bash
+npm install escrownet-sdk
+```
 
-## 📦 Structure
+## Usage
 
--   `src/`: SDK core logic (contracts, handlers)
--   `examples/`: Example apps and usage demos
--   `docs/`: API references and guides
--   `tests/`: Unit and integration tests
+```typescript
+import { EscrowNetSDK, Provider, Account } from 'escrownet-sdk';
+import { RpcProvider } from 'starknet';
 
-## 📚 Documentation
+// Initialize the provider and account
+const provider = new RpcProvider({ nodeUrl: 'YOUR_STARKNET_NODE_URL' });
+const account = new Account(provider, 'YOUR_ACCOUNT_ADDRESS', 'YOUR_PRIVATE_KEY');
 
-See [`docs/`](./docs) for guides and references.
+// Create SDK instance
+const sdk = new EscrowNetSDK({
+    provider,
+    account
+});
 
-## 💡 Examples
+// Register a user
+await sdk.registerUser('username');
 
-Explore real-world usage in [`examples/`](./examples).
+// Create an escrow
+const escrowId = await sdk.createEscrow({
+    recipient: 'RECIPIENT_ADDRESS',
+    amount: BigInt(1000000000000000000), // 1 ETH in wei
+    description: 'Payment for services'
+});
 
-## 🤝 Contributing
+// Release funds
+await sdk.releaseFunds(escrowId);
 
-See [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+// Cancel escrow
+await sdk.cancelEscrow(escrowId);
+```
+
+## API Reference
+
+### EscrowNetSDK
+
+The main class for interacting with the EscrowNet contract.
+
+#### Constructor
+
+```typescript
+constructor(config: EscrowNetSDKConfig)
+```
+
+Parameters:
+- `config`: Configuration object containing:
+  - `provider`: StarkNet provider instance
+  - `account`: StarkNet account instance
+
+#### Methods
+
+##### registerUser
+
+```typescript
+async registerUser(username: string): Promise<void>
+```
+
+Registers a new user with the provided username.
+
+Parameters:
+- `username`: The username to register
+
+##### createEscrow
+
+```typescript
+async createEscrow(params: EscrowParams): Promise<string>
+```
+
+Creates a new escrow contract.
+
+Parameters:
+- `params`: Object containing:
+  - `recipient`: The recipient's address
+  - `amount`: The amount to escrow (in wei)
+  - `description`: Description of the escrow
+
+Returns:
+- `Promise<string>`: The escrow ID
+
+##### releaseFunds
+
+```typescript
+async releaseFunds(escrowId: string): Promise<void>
+```
+
+Releases funds to the recipient for a specific escrow.
+
+Parameters:
+- `escrowId`: The ID of the escrow to release funds from
+
+##### cancelEscrow
+
+```typescript
+async cancelEscrow(escrowId: string): Promise<void>
+```
+
+Cancels an escrow contract.
+
+Parameters:
+- `escrowId`: The ID of the escrow to cancel
+
+## Development
+
+### Building
+
+```bash
+npm run build
+```
+
+### Testing
+
+```bash
+npm test
+```
+
+## License
+
+MIT
