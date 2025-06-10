@@ -5,8 +5,10 @@ import {
     constants,
     stark,
     uint256,
+    Transaction,
 } from "starknet";
 import { hash } from "starknet";
+import { estimateFees, type GasEstimate } from "./utils/gasEstimation";
 
 // Custom error types
 export class EscrowNetError extends Error {
@@ -159,7 +161,7 @@ export class EscrowNetSDK {
     }
 
     /**
-     * Safely executes a transaction with proper error handling
+     * Safely executes a transaction with proper error handling and dynamic gas estimation
      * @param transactionFn The transaction function to execute
      * @param errorMessage The error message to use if the transaction fails
      * @returns The transaction result
@@ -169,7 +171,29 @@ export class EscrowNetSDK {
         errorMessage: string
     ): Promise<T> {
         try {
-            return await transactionFn();
+            // Get the transaction object before executing
+            const tx = await transactionFn();
+
+            // If the transaction is a Transaction object, estimate gas
+            if (tx && typeof tx === "object" && "transaction_hash" in tx) {
+                const gasEstimate = await estimateFees(
+                    this.provider,
+                    tx as Transaction
+                );
+
+                // Update the transaction with estimated gas
+                const updatedTx = {
+                    ...tx,
+                    resource_bounds: gasEstimate,
+                };
+
+                // Execute the transaction with updated gas
+                return await this.provider.waitForTransaction(
+                    updatedTx.transaction_hash
+                );
+            }
+
+            return tx;
         } catch (error: any) {
             if (error instanceof EscrowNetError) {
                 throw error;
